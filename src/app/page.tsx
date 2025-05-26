@@ -176,7 +176,7 @@ export default function Home() {
               onClick={startNewGame}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
             >
-              リトライ (R or S)
+              リトライ <span className="hidden sm:inline">(R or S)</span>
             </button>
           </div>
         </div>

@@ -14,6 +14,7 @@ interface HandProps {
 }
 
 const keyMap = ['d', 'f', 'j', 'k', 'l'];
+const numKeys = ['1', '2', '3', '4', '5'];
 
 export const Hand: React.FC<HandProps> = ({ cards, onCardPlay, playableCards }) => {
   const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -21,8 +22,11 @@ export const Hand: React.FC<HandProps> = ({ cards, onCardPlay, playableCards }) 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       const keyIndex = keyMap.indexOf(e.key.toLowerCase());
-      if (keyIndex !== -1 && cards[keyIndex] && playableCards.includes(cards[keyIndex].id)) {
-        onCardPlay(cards[keyIndex].id, cardRefs.current[keyIndex]);
+      const numIndex = numKeys.indexOf(e.key);
+      const index = keyIndex !== -1 ? keyIndex : numIndex;
+      
+      if (index !== -1 && cards[index] && playableCards.includes(cards[index].id)) {
+        onCardPlay(cards[index].id, cardRefs.current[index]);
       }
     };
 
@@ -58,6 +62,9 @@ export const Hand: React.FC<HandProps> = ({ cards, onCardPlay, playableCards }) 
                     className={`${isPlayable ? 'border-4 border-blue-400 hover:scale-110' : ''} transition-transform w-24 sm:w-32`}
                   />
                 </motion.div>
+                <div className="hidden sm:block mt-2 text-white font-bold text-lg">
+                  {keyMap[index].toUpperCase()}/{numKeys[index]}
+                </div>
               </div>
             );
           })}
