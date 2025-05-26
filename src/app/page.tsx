@@ -139,7 +139,7 @@ export default function Home() {
   // Rキーでのリトライ
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (gameOver && e.key.toLowerCase() === 'r') {
+      if (gameOver && (e.key.toLowerCase() === 'r' || e.key.toLowerCase() === 's')) {
         startNewGame();
       }
     };
@@ -176,7 +176,7 @@ export default function Home() {
               onClick={startNewGame}
               className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
             >
-              リトライ
+              リトライ (R or S)
             </button>
           </div>
         </div>
