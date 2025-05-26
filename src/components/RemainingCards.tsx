@@ -25,15 +25,15 @@ export const RemainingCards: React.FC<RemainingCardsProps> = ({ playedCards }) =
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto mb-8">
+    <div className="w-full max-w-2xl mx-auto mb-8">
       <div className="bg-gray-200 rounded-lg p-4">
         <table className="w-full">
           <tbody>
             {suits.map(suit => (
               <tr key={suit} className="border-b border-gray-300 last:border-none">
-                <td className={`${suitColors[suit]} text-md md:text-4xl md:p-2`}>{suit}</td>
+                <td className={`${suitColors[suit]} text-md md:text-4xl p-1 md:p-2`}>{suit}</td>
                 {Array.from({ length: 13 }, (_, i) => i + 1).map(num => (
-                  <td key={num} className="md:p-2 text-center">
+                  <td key={num} className="p-1 md:p-2 text-center">
                     {!isCardPlayed(suit, num) && (
                       <span className="text-gray-800 text-md md:text-2xl">
                         {getDisplayNumber(num)}

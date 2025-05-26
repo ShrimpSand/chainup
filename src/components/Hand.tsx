@@ -32,7 +32,7 @@ export const Hand: React.FC<HandProps> = ({ cards, onCardPlay, playableCards }) 
 
   return (
     <div className="flex justify-center mt-8">
-      <div className="relative flex justify-center gap-1 sm:gap-4 max-w-full">
+      <div className="relative flex justify-center gap-1 md:gap-4 max-w-full">
         <AnimatePresence mode="popLayout">
           {cards.map((card, index) => {
             const isPlayable = playableCards.includes(card.id);

@@ -6,39 +6,23 @@ interface CardProps {
   number: number;
   onClick?: () => void;
   className?: string;
-  animate?: any;
-  initial?: any;
-  transition?: any;
 }
 
-const suitColors = {
-  '♠': 'text-blue-600',
-  '♥': 'text-red-600',
-  '♣': 'text-green-600',
-  '♦': 'text-yellow-500'
-};
-
-export const Card: React.FC<CardProps> = ({
-  suit,
-  number,
-  onClick,
-  className = '',
-  animate,
-  initial,
-  transition
-}) => {
+export const Card: React.FC<CardProps> = ({ suit, number, onClick, className = '' }) => {
+  const isRed = suit === '♥' || suit === '♦';
   const displayNumber = number === 1 ? 'A' : number === 11 ? 'J' : number === 12 ? 'Q' : number === 13 ? 'K' : number;
 
   return (
-    <motion.div
-      className={`w-[17vw] max-w-32 h-[24vw] max-h-48 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer ${className}`}
+    <div
       onClick={onClick}
-      initial={initial}
-      animate={animate}
-      transition={transition}
+      className={`w-[19vw] h-[28vw] md:w-32 md:h-48 bg-white rounded-lg shadow-lg flex flex-col items-center justify-center cursor-pointer ${className}`}
     >
-      <div className={`text-4xl sm:text-5xl sm:mb-2 ${suitColors[suit]}`}>{suit}</div>
-      <div className={`text-3xl sm:text-4xl font-bold ${suitColors[suit]}`}>{displayNumber}</div>
-    </motion.div>
+      <div className={`text-4xl ${isRed ? 'text-red-500' : 'text-gray-800'}`}>
+        {suit}
+      </div>
+      <div className={`text-4xl font-bold mt-2 ${isRed ? 'text-red-500' : 'text-gray-800'}`}>
+        {displayNumber}
+      </div>
+    </div>
   );
 }; 

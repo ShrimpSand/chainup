@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { PlayArea } from '../components/PlayArea';
 import { Hand } from '../components/Hand';
 import { RemainingCards } from '../components/RemainingCards';
@@ -21,7 +21,7 @@ export default function Home() {
   const [isWin, setIsWin] = useState(false);
   const [lastPlayedCardPosition, setLastPlayedCardPosition] = useState<{ x: number; y: number } | undefined>();
 
-  const initializeDeck = () => {
+  const initializeDeck = useCallback(() => {
     const suits: ('♠' | '♥' | '♣' | '♦')[] = ['♠', '♥', '♣', '♦'];
     const newDeck: Card[] = [];
     let id = 1;
@@ -39,9 +39,9 @@ export default function Home() {
     }
 
     return newDeck;
-  };
+  }, []);
 
-  const startNewGame = () => {
+  const startNewGame = useCallback(() => {
     const newDeck = initializeDeck();
     const initialHand = newDeck.slice(0, 5).map((card, index) => ({
       ...card,
@@ -54,9 +54,9 @@ export default function Home() {
     setGameOver(false);
     setIsWin(false);
     setLastPlayedCardPosition(undefined);
-  };
+  }, [initializeDeck]);
 
-  const getPlayableCards = () => {
+  const getPlayableCards = useCallback(() => {
     if (playedCards.length === 0) return hand.map(card => card.id);
     const lastCard = playedCards[playedCards.length - 1];
     return hand
@@ -65,7 +65,7 @@ export default function Home() {
         card.number === lastCard.number
       )
       .map(card => card.id);
-  };
+  }, [hand, playedCards]);
 
   const playCard = (cardId: number, element?: HTMLElement | null) => {
     const card = hand.find(c => c.id === cardId);
@@ -106,7 +106,7 @@ export default function Home() {
     }
   };
 
-  const checkGameState = () => {
+  const checkGameState = useCallback(() => {
     const playableCards = getPlayableCards();
     if (playedCount === 52) {
       setGameOver(true);
@@ -118,7 +118,7 @@ export default function Home() {
       setGameOver(true);
       setIsWin(false);
     }
-  };
+  }, [getPlayableCards, playedCount, hand.length]);
 
   useEffect(() => {
     const newDeck = initializeDeck();
@@ -128,13 +128,13 @@ export default function Home() {
     }));
     setDeck(newDeck.slice(5));
     setHand(initialHand);
-  }, []);
+  }, [initializeDeck]);
 
   useEffect(() => {
     if (hand.length > 0) {
       checkGameState();
     }
-  }, [hand, playedCards]);
+  }, [hand, playedCards, checkGameState]);
 
   // Rキーでのリトライ
   useEffect(() => {
@@ -146,10 +146,10 @@ export default function Home() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [gameOver]);
+  }, [gameOver, startNewGame]);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-green-800 to-green-900 p-4 sm:p-8">
+    <main className="min-h-screen bg-gradient-to-b from-green-800 to-green-900 p-2 sm:p-8">
       <div className="relative max-w-4xl mx-auto">
         <RemainingCards playedCards={playedCards} />
         <div className="play-area-center">
