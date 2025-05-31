@@ -68,54 +68,33 @@ export default function Home() {
       .map(card => card.id);
   }, [hand, playedCards]);
 
-  const findMatchingCardFromDeck = useCallback((): Card | undefined => {
+  const findMatchingCardFromDeck = useCallback((playedCard: Card): Card | undefined => {
     if (!isEasyMode) return undefined;
     
-    const lastPlayedCard = playedCards[playedCards.length - 1];
-    if (!lastPlayedCard) return undefined;
-
-    // 手札にある数字のリストを作成
-    const handNumbers = new Set(hand.map(card => card.number));
-
-    // 場のカードと繋がるカードを探す
+    // 山札から出したカードと同じ数字か同じマークのカードを探す
     const matchingCards = deck.filter(card => 
-      card.suit === lastPlayedCard.suit || 
-      card.number === lastPlayedCard.number
+      card.suit === playedCard.suit || 
+      card.number === playedCard.number
     );
 
     if (matchingCards.length === 0) return undefined;
 
     // 同じマークと異なるマークのカードに分類
-    const sameSuitCards = matchingCards.filter(card => card.suit === lastPlayedCard.suit);
-    const differentSuitCards = matchingCards.filter(card => 
-      card.suit !== lastPlayedCard.suit && 
-      card.number === lastPlayedCard.number
-    );
+    const sameSuitCards = matchingCards.filter(card => card.suit === playedCard.suit);
+    const sameNumberCards = matchingCards.filter(card => card.number === playedCard.number);
 
-    // 60%の確率で同じマーク、40%の確率で異なるマークを選択
+    // 60%の確率で同じマーク、40%の確率で同じ数字を選択
     const useSameSuit = Math.random() < 0.6;
-
+    
     if (useSameSuit && sameSuitCards.length > 0) {
-      // 同じマークのカードの中から、手札の数字と同じものを優先
-      const sameSuitWithHandNumber = sameSuitCards.filter(card => handNumbers.has(card.number));
-      if (sameSuitWithHandNumber.length > 0) {
-        return sameSuitWithHandNumber[Math.floor(Math.random() * sameSuitWithHandNumber.length)];
-      }
       return sameSuitCards[Math.floor(Math.random() * sameSuitCards.length)];
-    } else if (differentSuitCards.length > 0) {
-      // 異なるマークのカードの中から、手札の数字と同じものを優先
-      const differentSuitWithHandNumber = differentSuitCards.filter(card => handNumbers.has(card.number));
-      if (differentSuitWithHandNumber.length > 0) {
-        return differentSuitWithHandNumber[Math.floor(Math.random() * differentSuitWithHandNumber.length)];
-      }
-      return differentSuitCards[Math.floor(Math.random() * differentSuitCards.length)];
-    } else if (sameSuitCards.length > 0) {
-      // 異なるマークのカードがない場合は同じマークのカードを使用
-      return sameSuitCards[Math.floor(Math.random() * sameSuitCards.length)];
+    } else if (sameNumberCards.length > 0) {
+      return sameNumberCards[Math.floor(Math.random() * sameNumberCards.length)];
     }
 
-    return undefined;
-  }, [deck, playedCards, isEasyMode, hand]);
+    // どちらかのグループからランダムに選択
+    return matchingCards[Math.floor(Math.random() * matchingCards.length)];
+  }, [deck, isEasyMode]);
 
   const playCard = (cardId: number, element?: HTMLElement | null) => {
     const card = hand.find(c => c.id === cardId);
@@ -133,12 +112,24 @@ export default function Home() {
       }
     }
 
+    // カードを場に出す
     setPlayedCards(prev => [...prev, card]);
     setPlayedCount(prev => prev + 1);
 
     if (deck.length > 0) {
       let newCard: Card;
-      const matchingCard = findMatchingCardFromDeck();
+      
+      // 残りの手札から、出したカードを除いた新しい手札を作成
+      const remainingHand = hand.filter(c => c.id !== cardId);
+      
+      // 出したカードと残りの手札が繋がるかチェック
+      const hasConnectingCard = remainingHand.some(c => 
+        c.suit === card.suit || 
+        c.number === card.number
+      );
+
+      // 残りの手札と繋がらない場合のみアシストを発動
+      const matchingCard = !hasConnectingCard && isEasyMode ? findMatchingCardFromDeck(card) : undefined;
       
       if (matchingCard) {
         // イージーモードで適切なカードが見つかった場合
@@ -167,7 +158,7 @@ export default function Home() {
     const playableCards = getPlayableCards();
     
     // ゲームクリアの条件をより詳細に判定
-    if (playedCount >= 52 || (playedCards.length === 52) || (deck.length === 0 && hand.length === 0)) {
+    if (playedCount > 0 && (playedCount >= 52 || (playedCards.length === 52) || (deck.length === 0 && hand.length === 0))) {
       console.log('Game Clear Triggered', {
         playedCount,
         playedCardsLength: playedCards.length,
