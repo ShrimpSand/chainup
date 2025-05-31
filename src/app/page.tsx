@@ -68,7 +68,7 @@ export default function Home() {
       .map(card => card.id);
   }, [hand, playedCards]);
 
-  const findMatchingCardFromDeck = useCallback((selectedCard: Card): Card | undefined => {
+  const findMatchingCardFromDeck = useCallback((): Card | undefined => {
     if (!isEasyMode) return undefined;
     
     const lastPlayedCard = playedCards[playedCards.length - 1];
@@ -138,7 +138,7 @@ export default function Home() {
 
     if (deck.length > 0) {
       let newCard: Card;
-      const matchingCard = findMatchingCardFromDeck(card);
+      const matchingCard = findMatchingCardFromDeck();
       
       if (matchingCard) {
         // イージーモードで適切なカードが見つかった場合
