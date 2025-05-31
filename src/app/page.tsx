@@ -229,10 +229,10 @@ export default function Home() {
             }}
             className="bg-white text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors"
           >
-            {isEasyMode ? 'ノーマルモードに切り替え' : 'イージーモードに切り替え'}
+            {isEasyMode ? 'モード切り替え' : 'モード切り替え'}
           </button>
           <div className="text-white font-bold">
-            現在のモード: {isEasyMode ? 'イージー' : 'ノーマル'}
+            モード: {isEasyMode ? 'イージー' : 'ノーマル'}
           </div>
         </div>
         <RemainingCards playedCards={playedCards} />
